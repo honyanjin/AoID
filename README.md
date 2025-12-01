@@ -6,6 +6,8 @@
 [![React](https://img.shields.io/badge/React-19.2-61dafb)](https://react.dev/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green)](https://nodejs.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-336791)](https://www.postgresql.org/)
+[![Deploy](https://img.shields.io/badge/Deploy-GitHub_Actions-2088FF)](https://github.com/features/actions)
+[![Server](https://img.shields.io/badge/Server-AWS_EC2-FF9900)](https://aws.amazon.com/ec2/)
 
 ## 목차
 
@@ -16,6 +18,7 @@
 - [프로젝트 구조](#프로젝트-구조)
 - [API 엔드포인트](#api-엔드포인트)
 - [개발 환경 설정](#개발-환경-설정)
+- [CI/CD 파이프라인](#cicd-파이프라인)
 - [문제 해결](#문제-해결)
 - [문서](#문서)
 
@@ -126,33 +129,42 @@ npm start
 
 ```
 AoID/
-├── backend/                    # 백엔드 서버
+├── backend/                    # 백엔드 서버 (Git 서브모듈)
+│   ├── .github/workflows/
+│   │   └── deploy.yml         # GitHub Actions 배포
 │   ├── database/
-│   │   └── schema.sql         # PostgreSQL 스키마
+│   │   ├── legacy/            # 기존 SQL 스키마
+│   │   └── migrations/        # DB 마이그레이션
 │   ├── src/
 │   │   ├── config/            # 설정 (DB, Passport)
-│   │   ├── controllers/       # 비즈니스 로직
+│   │   ├── controllers/       # 비즈니스 로직 (23개)
 │   │   ├── middleware/        # 인증 미들웨어
 │   │   ├── routes/            # API 라우트
 │   │   ├── types/             # TypeScript 타입
 │   │   └── index.ts           # 서버 진입점
+│   ├── uploads/               # 업로드 파일 저장소
 │   ├── .env.example
 │   ├── package.json
 │   └── tsconfig.json
 │
-├── frontend/                   # 프론트엔드
+├── frontend/                   # 프론트엔드 (Git 서브모듈)
+│   ├── .github/workflows/
+│   │   └── deploy.yml         # GitHub Actions 배포
+│   ├── public/                # 정적 파일
 │   ├── src/
 │   │   ├── components/        # React 컴포넌트
 │   │   │   ├── about/        # About 페이지
-│   │   │   ├── admin/        # 관리자 기능
+│   │   │   ├── admin/        # 관리자 기능 (50+)
 │   │   │   ├── auth/         # 인증 관련
 │   │   │   ├── board/        # 게시판
 │   │   │   ├── comment/      # 댓글
-│   │   │   └── common/       # 공통 컴포넌트
-│   │   ├── contexts/          # React Context
+│   │   │   ├── common/       # 공통 컴포넌트
+│   │   │   └── mypage/       # 마이페이지
+│   │   ├── contexts/          # React Context (AuthContext)
 │   │   ├── pages/             # 페이지 컴포넌트
-│   │   ├── services/          # API 서비스
+│   │   ├── services/          # API 서비스 (Axios)
 │   │   ├── types/             # TypeScript 타입
+│   │   ├── utils/             # 유틸리티 함수
 │   │   └── App.tsx
 │   ├── package.json
 │   └── tsconfig.json
@@ -301,6 +313,127 @@ Error: redirect_uri_mismatch
 - 브라우저 개발자 도구 → Application → Local Storage → token 삭제
 
 더 자세한 문제 해결: [로컬_실행_가이드.md](로컬_실행_가이드.md) 참고
+
+## CI/CD 파이프라인
+
+GitHub Actions를 통해 자동 배포가 구성되어 있습니다. `main` 브랜치에 push하면 자동으로 AWS EC2 서버에 배포됩니다.
+
+### 아키텍처
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   개발자 PC      │────▶│   GitHub        │────▶│   AWS EC2       │
+│                 │     │   (main branch) │     │   (Production)  │
+│ git push        │     │   Actions 실행   │     │   자동 배포      │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+```
+
+### Frontend 배포 워크플로우
+
+```yaml
+# .github/workflows/deploy.yml
+트리거: main 브랜치 push
+단계:
+  1. 코드 체크아웃
+  2. Node.js 18 설정
+  3. npm install
+  4. npm run build (React 프로덕션 빌드)
+  5. SSH로 EC2 접속 → build 폴더 복사
+  6. Nginx 웹 디렉토리로 배포 (/var/www/html)
+  7. Nginx 재시작
+```
+
+### Backend 배포 워크플로우
+
+```yaml
+# .github/workflows/deploy.yml
+트리거: main 브랜치 push
+단계:
+  1. 코드 체크아웃
+  2. SSH로 EC2 접속
+  3. git pull (최신 코드)
+  4. npm install
+  5. npm run build (TypeScript 컴파일)
+  6. PM2 재시작
+```
+
+### GitHub Secrets 설정
+
+배포를 위해 GitHub Repository에 다음 Secrets가 필요합니다:
+
+| Secret 이름 | 설명 | 예시 |
+|------------|------|------|
+| `EC2_HOST` | EC2 서버 주소 | `aoid.kr` 또는 IP |
+| `EC2_USER` | SSH 사용자명 | `ubuntu` |
+| `EC2_SSH_KEY` | SSH 개인키 (PEM) | `-----BEGIN RSA PRIVATE KEY-----...` |
+
+### 서버 환경
+
+- **OS**: Ubuntu (AWS EC2)
+- **웹 서버**: Nginx (프론트엔드 정적 파일 서빙, API 프록시)
+- **프로세스 관리**: PM2 (백엔드 Node.js 관리)
+- **SSL**: Let's Encrypt (HTTPS)
+
+### Nginx 설정 (요약)
+
+```nginx
+server {
+    server_name aoid.kr www.aoid.kr;
+    client_max_body_size 5M;  # 파일 업로드 제한
+
+    # 프론트엔드 (React SPA)
+    location / {
+        root /var/www/html;
+        try_files $uri $uri/ /index.html;
+    }
+
+    # 백엔드 API 프록시
+    location /api {
+        proxy_pass http://localhost:5000;
+    }
+
+    # 업로드 이미지
+    location /uploads {
+        proxy_pass http://localhost:5000;
+    }
+
+    # SSL (Let's Encrypt)
+    listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/aoid.kr/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/aoid.kr/privkey.pem;
+}
+```
+
+### 수동 배포 (필요시)
+
+```bash
+# 백엔드 수동 배포
+ssh -i "키파일.pem" ubuntu@aoid.kr
+cd ~/app/backend
+git pull origin main
+npm install
+npm run build
+pm2 restart backend
+
+# 프론트엔드 수동 배포
+# 로컬에서 빌드 후 scp로 전송
+npm run build
+scp -i "키파일.pem" -r build/* ubuntu@aoid.kr:~/app/frontend/
+ssh -i "키파일.pem" ubuntu@aoid.kr "sudo cp -r ~/app/frontend/* /var/www/html/ && sudo systemctl reload nginx"
+```
+
+### 배포 확인
+
+```bash
+# 서버 상태 확인
+ssh -i "키파일.pem" ubuntu@aoid.kr "pm2 status"
+
+# 로그 확인
+ssh -i "키파일.pem" ubuntu@aoid.kr "pm2 logs backend --lines 50"
+
+# Nginx 상태
+ssh -i "키파일.pem" ubuntu@aoid.kr "sudo systemctl status nginx"
+```
 
 ## 보안
 
