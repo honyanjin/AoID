@@ -26,9 +26,11 @@ const NewsImageGallery = () => {
                 ))}
               </div>
               <div className="relative z-10 flex flex-col items-center">
-                <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-4 shadow-lg shadow-green-500/50">
-                  <Terminal className="w-12 h-12 text-white" />
-                </div>
+                <img
+                  src="./Ref_Asset/NodeJs_Logo_251127.svg"
+                  alt="Node.js Logo"
+                  className="w-28 h-28 mb-4"
+                />
                 <div className="text-white text-4xl font-bold mb-2">Node.js</div>
                 <div className="bg-green-500 px-6 py-2 rounded-full">
                   <span className="text-white text-2xl font-mono font-bold">v25.2.1</span>
