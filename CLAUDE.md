@@ -2,6 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🚨 중요 규칙 (반드시 준수)
+
+### DB 변경사항 반영 순서
+1. **로컬 DB 먼저 반영** - 개발 환경에서 테스트
+2. **사용자에게 프로덕션 반영 여부 확인** - "프로덕션(AWS) DB에도 반영할까요?" 질문
+3. **승인 시 프로덕션 DB 반영** - SSH로 AWS 서버 접속하여 마이그레이션 실행
+
+> ⚠️ 프로덕션 DB를 먼저 변경하거나 사용자 확인 없이 변경하지 말 것
+
 ## 프로젝트 개요
 
 AoID (Association of Independent Developers)는 독립 개발자들을 위한 협회 플랫폼입니다. 백엔드(Express + TypeScript + PostgreSQL)와 프론트엔드(React + TypeScript)로 구성된 풀스택 애플리케이션입니다.
