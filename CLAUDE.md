@@ -4,6 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 🚨 중요 규칙 (반드시 준수)
 
+### 배포
+- **배포는 GitHub Actions를 통해 자동으로 이루어진다**
+- **git push 전에 반드시 사용자 허락을 받을 것** - "푸시해도 될까요?" 질문 필수
+- git push 후 배포 여부를 묻지 말 것 (이미 자동 배포됨)
+- 수동 배포(SSH 접속 등) 불필요
+
+> ⚠️ 커밋은 자유롭게 해도 되지만, push는 반드시 사용자 승인 후 진행
+
 ### DB 변경사항 반영 순서
 1. **로컬 DB 먼저 반영** - 개발 환경에서 테스트
 2. **사용자에게 프로덕션 반영 여부 확인** - "프로덕션(AWS) DB에도 반영할까요?" 질문
