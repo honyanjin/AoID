@@ -29,6 +29,10 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 
 > ⚠️ 프로덕션 DB 마이그레이션은 깃허브 액션을 통해 자동으로 처리된다는 점을 항상 기억하고 준수할 것.
 
+### DB 마이그레이션 작성 및 실행 수칙 (필수 준수)
+1. **마이그레이션 실행 시 npx 사용**: 서버 환경별 전역 CLI 설치 차이로 인한 실행 실패를 방지하기 위해 `run-migrate.js` 스크립트 내부에서는 반드시 `npx node-pg-migrate` 명령어를 사용한다.
+2. **마이그레이션 파일 CommonJS 문법 준수**: `backend/database/migrations/` 하위의 마이그레이션 파일 작성 시 ES Module(`export const up`)이 아닌 **CommonJS(`exports.up = (pgm) => { ... }`)** 문법을 필수 준수하여 Node.js 마이그레이션 러너의 SyntaxError를 방지한다.
+
 ## 프로젝트 개요
 
 AoID (Association of Independent Developers)는 독립 개발자들을 위한 협회 플랫폼입니다. 백엔드(Express + TypeScript + PostgreSQL)와 프론트엔드(React + TypeScript)로 구성된 풀스택 애플리케이션입니다.
