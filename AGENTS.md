@@ -18,6 +18,11 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 
 > ⚠️ 커밋은 자유롭게 해도 되지만, push는 반드시 사용자 승인 후 진행
 
+### 서브모듈 및 루트 커밋 수칙
+- **서브모듈(frontend/backend) 커밋 즉시 루트 저장소 포인터 커밋 동시 수행**:
+  - 서브모듈 하위 폴더에서 `git commit`을 생성한 직후에는, 반드시 딜레이 없이 루트 저장소(`AoID`)에서도 `git add frontend` (또는 backend)를 실행하여 메인 저장소의 서브모듈 포인터 업데이트 커밋(`git commit -m "chore: update submodule pointer..."`)까지 한 묶음 세트로 즉시 완료해야 한다.
+
+
 ### 테스트 및 검증
 - 테스트 및 검증이 필요한 경우에는 사용자에게 테스트 방법을 안내하고 사용자에게 테스트 요청을 해야한다.
 - 사용자가 직접 테스트를 하라고 분명히 명시하는 경우에만 브라우저 컨트롤 기능을 사용할 것
