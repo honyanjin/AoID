@@ -217,6 +217,12 @@ npm test              # Jest 테스트 실행
 2. 실제 `.env` 파일에 값 추가
 3. README/SETUP_GUIDE에 문서화
 
+## Nginx 서버 설정 수칙
+
+- **EC2 프로덕션 Nginx 실제 설정 파일 경로**: `/etc/nginx/sites-available/aoid`
+  - `aoid.kr` 및 `www.aoid.kr` 도메인의 HTTP(80) 및 HTTPS(443) 가상 호스트 규칙을 관장하는 실제 파일임 (`default` 파일이 아님).
+  - Nginx 설정 변경이나 유지보수 라우팅 수정 필요 시 반드시 `sudo nano /etc/nginx/sites-available/aoid` 경로를 수정할 것.
+
 ## 보안 고려사항
 
 - 비밀번호는 절대 평문으로 저장하지 않음 (bcrypt 해싱 사용)
