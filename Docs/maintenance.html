@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="300">
+    <title>AoID - 서비스 점검 및 업데이트 안내</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 470 470'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:%23323333;stroke:%234c9bd5;stroke-miterlimit:10;stroke-width:20px;%7D.cls-2%7Bfill:%23246fb8;stroke:%23f5f5f5;stroke-miterlimit:10;stroke-width:20px;%7D%3C/style%3E%3C/defs%3E%3Cpath class='cls-1' d='M68.88,10h196.48c107.42,0,194.64,87.21,194.64,194.64v67.84c0,103.5-84.03,187.53-187.53,187.53H69.82c-33.02,0-59.82-26.81-59.82-59.82V68.88c0-32.5,26.38-58.88,58.88-58.88Z'/%3E%3Cpath class='cls-2' d='M307.57,114.65l15.17,246.67c1.48,24.13-22.7,41.55-45.12,32.51h0c-18.13-7.32-30.51-24.34-31.87-43.84l-1.28-18.35c-.31-4.42-3.11-8.27-7.22-9.93l-95.71-38.61c-4.11-1.66-8.8-.83-12.09,2.14l-13.65,12.32c-14.52,13.1-35.24,16.77-53.37,9.46h0c-22.42-9.04-27.74-38.37-9.93-54.72L234.59,85.21c12.38-11.36,30.2-14.6,45.78-8.31h0c15.59,6.29,26.17,20.98,27.2,37.75ZM244.82,246.58h0c-.65-29.16-35.89-43.37-56.59-22.83h0c-5.9,5.86-3.89,15.84,3.82,18.95l36.86,14.87c7.71,3.11,16.09-2.68,15.91-10.99Z'/%3E%3Ccircle class='cls-2' cx='390.83' cy='235' r='37.5'/%3E%3C/svg%3E">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border: 1px solid #e2e8f0;
+            padding: 48px 36px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1976d2;
+            letter-spacing: -0.5px;
+        }
+        .sub-logo {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 32px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .icon-box {
+            width: 72px;
+            height: 72px;
+            background-color: #eff6ff;
+            color: #1976d2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px auto;
+        }
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3.5px solid #cbd5e1;
+            border-top: 3.5px solid #1976d2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+        p {
+            font-size: 15px;
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        .notice-card {
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+        .footer {
+            margin-top: 32px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <svg class="logo-icon" viewBox="0 0 470 470" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#323333" stroke="#4c9bd5" stroke-miterlimit="10" stroke-width="20" d="M68.88,10h196.48c107.42,0,194.64,87.21,194.64,194.64v67.84c0,103.5-84.03,187.53-187.53,187.53H69.82c-33.02,0-59.82-26.81-59.82-59.82V68.88c0-32.5,26.38-58.88,58.88-58.88Z"/>
+                <path fill="#246fb8" stroke="#f5f5f5" stroke-miterlimit="10" stroke-width="20" d="M307.57,114.65l15.17,246.67c1.48,24.13-22.7,41.55-45.12,32.51h0c-18.13-7.32-30.51-24.34-31.87-43.84l-1.28-18.35c-.31-4.42-3.11-8.27-7.22-9.93l-95.71-38.61c-4.11-1.66-8.8-.83-12.09,2.14l-13.65,12.32c-14.52,13.1-35.24,16.77-53.37,9.46h0c-22.42-9.04-27.74-38.37-9.93-54.72L234.59,85.21c12.38-11.36,30.2-14.6,45.78-8.31h0c15.59,6.29,26.17,20.98,27.2,37.75ZM244.82,246.58h0c-.65-29.16-35.89-43.37-56.59-22.83h0c-5.9,5.86-3.89,15.84,3.82,18.95l36.86,14.87c7.71,3.11,16.09-2.68,15.91-10.99Z"/>
+                <circle fill="#246fb8" stroke="#f5f5f5" stroke-miterlimit="10" stroke-width="20" cx="390.83" cy="235" r="37.5"/>
+            </svg>
+            <div class="logo">AoID</div>
+        </div>
+        <div class="sub-logo">Association of Independent Developers</div>
+
+        <div class="icon-box">
+            <div class="spinner"></div>
+        </div>
+
+        <h1>서비스 점검 및 업데이트 중</h1>
+        <p>더 향상된 서비스를 제공하기 위해 현재 시스템 업데이트를 진행하고 있습니다.</p>
+
+        <div class="notice-card">
+            10분 이내에 완료됩니다.<br>5분마다 자동으로 화면이 새로고침됩니다.
+        </div>
+
+        <div class="footer">
+            &copy; AoID All rights reserved.
+        </div>
+    </div>
+</body>
+</html>
