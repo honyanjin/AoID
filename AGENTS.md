@@ -28,7 +28,7 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 - 사용자가 직접 테스트를 하라고 분명히 명시하는 경우에만 브라우저 컨트롤 기능을 사용할 것
 
 ### DB 변경사항 반영 순서
-1. **로컬 DB 먼저 반영** - 개발 환경에서 테스트 및 기능 검증
+1. **로컬 DB 먼저 반영** - 개발 환경에서 테스트 및 기능 검증 (`npm run db:migrate`)
 2. **배포 시 자동 반영** - GitHub Actions 배포 워크플로우(`deploy.yml`)가 돌면서 `npm run db:migrate`를 수행해 프로덕션(AWS) DB에 마이그레이션이 자동 반영됨. 
 *따라서 사용자에게 프로덕션 DB 직접/수동 마이그레이션 여부를 따로 확인하거나 요청할 필요가 없음.*
 
@@ -38,9 +38,15 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 1. **마이그레이션 실행 시 npx 사용**: 서버 환경별 전역 CLI 설치 차이로 인한 실행 실패를 방지하기 위해 `run-migrate.js` 스크립트 내부에서는 반드시 `npx node-pg-migrate` 명령어를 사용한다.
 2. **마이그레이션 파일 CommonJS 문법 준수**: `backend/database/migrations/` 하위의 마이그레이션 파일 작성 시 ES Module(`export const up`)이 아닌 **CommonJS(`exports.up = (pgm) => { ... }`)** 문법을 필수 준수하여 Node.js 마이그레이션 러너의 SyntaxError를 방지한다.
 
+### 서버 시간대 및 타임존 (KST Asia/Seoul) 수칙 (필수 준수)
+- **서버 물리 위치와 무관하게 한국 표준시(KST, Asia/Seoul) 기준 구동**:
+  - 프로덕션 서버(AWS EC2 UTC+0)와 접속 환경(KST UTC+9) 간 9시간 시차 오차를 방지하기 위해 백엔드 진입점(`backend/src/index.ts`)에는 `process.env.TZ = 'Asia/Seoul';`이 설정되어 있다.
+  - PostgreSQL DB 커넥션 생성 시(`backend/src/config/database.ts`)에도 `SET TIMEZONE='Asia/Seoul'` 구문으로 세션 타임존을 KST로 고정 유지한다.
+  - 게시글 카로셀 기간 설정 등 모든 날짜/시간 처리 작업 시 9시간 오차가 발생하지 않도록 이 KST(Asia/Seoul) 기준을 준수한다.
+
 ## 프로젝트 개요
 
-AoID (Association of Independent Developers)는 독립 개발자들을 위한 협회 플랫폼입니다. 백엔드(Express + TypeScript + PostgreSQL)와 프론트엔드(React + TypeScript)로 구성된 풀스택 애플리케이션입니다.
+AoID (Association of Independent Developers)는 독립 개발자들을 위한 협회 플랫폼입니다. 백엔드(Express + TypeScript + PostgreSQL)와 프론트엔드(React 19 + TypeScript)로 구성된 풀스택 애플리케이션입니다.
 
 ## 개발 환경 설정
 
@@ -54,6 +60,7 @@ AoID (Association of Independent Developers)는 독립 개발자들을 위한 �
 **데이터베이스:**
 ```bash
 psql -U postgres -f backend/database/schema.sql
+cd backend && npm run db:migrate
 ```
 
 **백엔드:**
@@ -89,51 +96,44 @@ npm test              # Jest 테스트 실행
 ### 백엔드 구조
 
 **계층 분리:**
-- `controllers/`: 요청 처리 로직 (authController, postController, commentController, adminController)
-- `routes/`: Express 라우트 정의
+- `controllers/`: 요청 처리 로직 (auth, post, comment, admin, home, library 등)
+- `routes/`: Express 라우트 정의 (core, home, library, shop, payment)
 - `middleware/`: 인증 미들웨어 (`authenticate`, `isAdmin`)
-- `config/`: 데이터베이스 연결, Passport OAuth 전략 설정
+- `config/`: 데이터베이스 연결 (`SET TIMEZONE='Asia/Seoul'`), Passport OAuth 전략 설정
 - `types/`: TypeScript 타입 정의
 
 **인증 시스템:**
-- JWT 기반 인증 (Bearer 토큰)
+- JWT 기반 인증 (Bearer 토큰 및 HTTP-Only 쿠키)
 - Passport를 사용한 OAuth 2.0 (Google, GitHub)
 - bcrypt를 사용한 비밀번호 해싱
 - 미들웨어: `authenticate` (인증 확인), `isAdmin` (관리자 권한 확인)
 
 **데이터베이스:**
-- PostgreSQL with `pg` 라이브러리
+- PostgreSQL with `pg` 라이브러리 및 `node-pg-migrate`
 - Connection pool (`config/database.ts`)
-- 주요 테이블: `users`, `user_profiles`, `board_categories`, `posts`, `comments`, `post_likes`
+- 주요 테이블: `users`, `user_profiles`, `board_categories`, `posts`, `comments`, `post_likes`, `image_library`, `video_library`, `shop_items` 등
 - 파라미터화된 쿼리로 SQL Injection 방지
 
 ### 프론트엔드 구조
 
-**상태 관리:**
+**상태 관리 & 데이터 패칭:**
+- React 19, React Router v7 (`react-router-dom v7`)
 - `AuthContext`: 전역 인증 상태 관리 (로그인, 로그아웃, 사용자 정보)
-- React Context API 사용
+- TanStack Query v5 (`@tanstack/react-query`): 서버 데이터 쿼리 및 캐싱
 
-**라우팅:**
-- React Router v6
-- 주요 페이지: HomePage, LoginPage, RegisterPage, BoardPage, PostDetailPage, AboutPage
+**주요 페이지:**
+- HomePage, LoginPage, RegisterPage, BoardPage, PostDetailPage, PostFormPage (게시글 작성/수정), AboutPage, AdminDashboardPage, ShopPage, DevCoinsPage
 
 **API 통신:**
 - `services/api.ts`: Axios 인스턴스
-- 요청 인터셉터: localStorage에서 JWT 토큰을 자동으로 Authorization 헤더에 추가
+- 요청 인터셉터: localStorage/쿠키에서 JWT 토큰을 자동으로 Authorization 헤더에 추가
 - 응답 인터셉터: 401 에러 시 자동 로그아웃 처리
-- API 모듈: `authAPI`, `postAPI`, `commentAPI`, `adminAPI`
+- API 모듈: `authAPI`, `postAPI`, `commentAPI`, `adminAPI`, `imageLibraryAPI`, `videoLibraryAPI` 등
 
-**UI 프레임워크:**
-- Material-UI (MUI)
+**UI 프레임워크 & 에디터:**
+- Material-UI v7 (`@mui/material v7`)
 - react-toastify로 알림 표시
-
-**컴포넌트 구조:**
-- `components/about/`: About 페이지 관련 컴포넌트
-- `components/admin/`: 관리자 기능 컴포넌트
-- `components/auth/`: 인증 관련 컴포넌트
-- `components/board/`: 게시판 컴포넌트
-- `components/comment/`: 댓글 컴포넌트
-- `components/common/`: 공통 컴포넌트 (Header, Footer 등)
+- RichTextEditor 모듈화 컴포넌트 (`components/common/rich-text-editor/`): 특수요소 파서, 잘라내기/붙여넣기, 대표이미지 고정 슬롯 카드, 이미지/동영상 라이브러리 연동
 
 ## API 엔드포인트
 
@@ -208,8 +208,8 @@ npm test              # Jest 테스트 실행
 3. 필요 시 `components/common/Header.tsx`에 네비게이션 링크 추가
 
 ### 데이터베이스 스키마 변경
-1. `backend/database/schema.sql` 수정
-2. `psql -U postgres -d aoid_db -f backend/database/schema.sql` 실행
+1. `backend/database/migrations/` 디렉토리에 마이그레이션 파일 작성 (`CommonJS` 문법 준수)
+2. `npm run db:migrate` 실행 (로컬 DB 반영)
 3. 영향받는 컨트롤러/쿼리 코드 업데이트
 
 ### 새 환경 변수 추가
