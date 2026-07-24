@@ -4,3 +4,6 @@
 [submodule "backend"]
 	path = backend
 	url = https://github.com/honyanjin/AoID_Backend.git
+[submodule "NewsMaker"]
+	path = NewsMaker
+	url = https://github.com/honyanjin/AoID_NewsMaker.git
