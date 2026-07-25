@@ -44,6 +44,10 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
   - PostgreSQL DB 커넥션 생성 시(`backend/src/config/database.ts`)에도 `SET TIMEZONE='Asia/Seoul'` 구문으로 세션 타임존을 KST로 고정 유지한다.
   - 게시글 카로셀 기간 설정 등 모든 날짜/시간 처리 작업 시 9시간 오차가 발생하지 않도록 이 KST(Asia/Seoul) 기준을 준수한다.
 
+### 데브스펙트럼 결과페이지 레이아웃 및 캡처 수칙 (필수 준수)
+- **PDF 저장 및 이미지 복사 대상 결과페이지 래퍼 카드는 항상 정비율 스케일링 조치 필수 적용**:
+  - 데브스펙트럼 검사시트의 결과페이지 중 PDF 저장 및 이미지 복사의 대상이 되는 모든 페이지들은 축소/확대(Zoom) 및 브라우저 해상도 변화 시에도 리포트 판형 형태가 변질되거나 요소가 아래로 무너지지 않도록 **`PrintPage` 기반 줌 투 핏(Zoom-to-Fit) 정비율 스케일링**, **수평 레이아웃 고정(`flexDirection: row`, `flexWrap: nowrap`)**, **SVG viewBox 기반 스케일링 조치**를 항상 필수로 적용해야 한다.
+
 ## 프로젝트 개요
 
 AoID (Association of Independent Developers)는 독립 개발자들을 위한 협회 플랫폼입니다. 백엔드(Express + TypeScript + PostgreSQL)와 프론트엔드(React 19 + TypeScript)로 구성된 풀스택 애플리케이션입니다.
