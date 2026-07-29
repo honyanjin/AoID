@@ -83,7 +83,7 @@ AoID (Association of Independent Developers)는 독립 개발자들을 위한 �
 
 **데이터베이스:**
 ```bash
-psql -U postgres -f backend/database/schema.sql
+psql -U postgres -f backend/database/legacy/schema.sql
 cd backend && npm run db:migrate
 ```
 
