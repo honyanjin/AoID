@@ -146,7 +146,7 @@ npm test              # Jest 테스트 실행
 - TanStack Query v5 (`@tanstack/react-query`): 서버 데이터 쿼리 및 캐싱
 
 **주요 페이지:**
-- HomePage, LoginPage, RegisterPage, BoardPage, PostDetailPage, PostFormPage (게시글 작성/수정), AboutPage, AdminDashboardPage, ShopPage, DevCoinsPage
+- HomePage, LoginPage, RegisterPage, BoardPage, PostDetailPage, PostFormPage (게시글 작성/수정), AboutPage, AdminDashboardPage, ShopPage, DevCreditsPage
 
 **API 통신:**
 - `services/api.ts`: Axios 인스턴스
